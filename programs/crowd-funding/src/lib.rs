@@ -14,6 +14,14 @@ pub mod crowd_funding {
         campaign.admin = *ctx.accounts.user.key;
         Ok(())
     }
+
+    pub fn withdraw(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
+        let campaign = &mut ctx.account.campaign;
+        let user = &mut ctx.accounts.user;
+        if campaign.admin != *user.key{
+            return Err(ProgramError::IncorrectProgramId);
+        }
+    }
     
 }
 
@@ -24,4 +32,12 @@ pub struct Create<'info> {
     #[account(mut)]
     pub user: Signer<'info>
     pub system_program: Program<'info, System>
+}
+
+#[account]
+pub struct Campaign {
+    pub admin: PubKey,
+    pub name: String,
+    pub description: String,
+    pub amount_donated: u64
 }
