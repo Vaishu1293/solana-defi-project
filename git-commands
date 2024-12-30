@@ -8,3 +8,18 @@ git push -u origin main
 
 
 solana program deploy --buffer /home/vaishalichandrashekhar/.config/solana/id.json ./target/deploy/crowd_funding.so
+
+BIP39 Passphrase (empty for none):
+
+Wrote new keypair to /taregt/deploy/crowd_funding-keypair.json
+================================================================================
+pubkey: 8Nd1UCZ8ds971CLtpXrpVYzgR5qkLgtHeFLVQpmKJ4Kn
+================================================================================
+Save this seed phrase and your BIP39 passphrase to recover your new keypair:
+shoulder smart taste weekend puppy group denial ignore company town climb rotate
+================================================================================
+
+Program Id: wwdavtgUZKWDrNxqkTNyyGeFCZeQDWV7grWiQkwihob
+
+Signature: 3vDMB5PjjtphhHMnC5twBi7f6DMKbeThbwSqn2i3uPsSaSxRFt1oExe9Z9wkgSGjr5E4g1XfUPeA9jGTmeHMzgcx
+
