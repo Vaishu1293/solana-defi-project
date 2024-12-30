@@ -5,3 +5,27 @@ target
 node_modules
 test-ledger
 .yarn
+
+# dependencies
+/crowd-funding-frontend/.gitignore
+/crowd-funding-frontend/node_modules
+/crowd-funding-frontend/.pnp
+/crowd-funding-frontend/.pnp.js
+
+# testing
+/crowd-funding-frontend/coverage
+
+# production
+/crowd-funding-frontend/build
+
+# misc
+/crowd-funding-frontend/.DS_Store
+/crowd-funding-frontend/.env.local
+/crowd-funding-frontend/.env.development.local
+/crowd-funding-frontend/.env.test.local
+/crowd-funding-frontend/.env.production.local
+
+/crowd-funding-frontend/npm-debug.log*
+/crowd-funding-frontend/yarn-debug.log*
+/crowd-funding-frontend/yarn-error.log*
+
