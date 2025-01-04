@@ -5,6 +5,7 @@ target
 node_modules
 test-ledger
 .yarn
+other-details.txt
 
 # dependencies
 /crowd-funding-frontend/.gitignore
