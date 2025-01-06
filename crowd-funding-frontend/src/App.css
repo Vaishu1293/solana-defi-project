@@ -36,3 +36,103 @@
     transform: rotate(360deg);
   }
 }
+
+/* General Styles */
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #f9fafc;
+  color: #333;
+}
+
+.App {
+  text-align: center;
+  padding: 20px;
+}
+
+/* Wallet Connection Button */
+button {
+  background-color: #4f46e5;
+  color: white;
+  font-size: 16px;
+  padding: 10px 20px;
+  margin: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #4338ca;
+}
+
+button:disabled {
+  background-color: #a5b4fc;
+  cursor: not-allowed;
+}
+
+/* Campaign Container */
+.campaigns-container {
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* Individual Campaign Card */
+.campaign-card {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 300px;
+  text-align: left;
+  transition: transform 0.2s ease;
+}
+
+.campaign-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Campaign Card Content */
+.campaign-card p {
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.campaign-card p:first-child {
+  font-weight: bold;
+  color: #4f46e5;
+}
+
+/* Donate Button */
+.campaign-card button {
+  margin-top: 10px;
+  background-color: #16a34a;
+}
+
+.campaign-card button:hover {
+  background-color: #15803d;
+}
+
+/* Loading State */
+.loading {
+  margin-top: 50px;
+  font-size: 18px;
+  color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .campaigns-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .campaign-card {
+    width: 90%;
+  }
+}
+
