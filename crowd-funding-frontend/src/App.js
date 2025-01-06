@@ -28,6 +28,7 @@ const App = () => {
   console.log("Program ID:", programID.toString());
 
   const [walletAddress, setWalletAddress] = useState(null);
+  const [campaigns, setCampaigns] = useState([]);
 
   const getProvider = () => {
     const connection = new Connection(network, opts.preflightCommitment);
@@ -69,20 +70,42 @@ const App = () => {
     }
   };
 
-  const createCampaign = async () => {
-    try {
-      const provider = getProvider();
-      console.log("Provider: ", provider);
-
+  const getCampaigns = async () => {
+    const connection = new Connection(network, opts.preflightCommitment);
+    const provider = getProvider();
     // Ensure Program Initialization is Correct
     if (!idl?.address) {
       throw new Error("Program ID is missing in idl.json");
     }
 
     const program = new Program(idl, idl.address, provider); // Use idl.address directly
-    console.log("Program Object:", program);
-    console.log("Program ID:", program.programId?.toString());
-    console.log("Wallet PublicKey:", provider.wallet.publicKey?.toString());
+
+    if (!provider.wallet.publicKey) {
+      throw new Error("Wallet not connected or publicKey is undefined.");
+    }
+
+    // Validate Before PDA Call
+    console.log("Finding PDA...");
+
+    Promise.all(
+      (await connection.getProgramAccounts(programID)).map(
+        async (campaign) => ({
+          ...(await program.account.campaign.fetch(campaign.pubkey)),
+          pubkey: campaign.pubkey,
+        })
+      )
+    ).then((campaigns) => setCampaigns(campaigns));
+  };
+
+  const createCampaign = async () => {
+    try {
+      const provider = getProvider();
+    // Ensure Program Initialization is Correct
+    if (!idl?.address) {
+      throw new Error("Program ID is missing in idl.json");
+    }
+
+    const program = new Program(idl, idl.address, provider); // Use idl.address directly
 
     if (!provider.wallet.publicKey) {
       throw new Error("Wallet not connected or publicKey is undefined.");
@@ -124,7 +147,23 @@ const App = () => {
   return (
     <div className="App">
       {!walletAddress && <button onClick={connectWallet}>Connect to Wallet</button>}
-      {walletAddress && <button onClick={createCampaign}>Create a Campaign</button>}
+      {walletAddress && (
+  <div>
+    <button onClick={createCampaign}>Create a Campaign</button>
+    <button onClick={getCampaigns}>Get a list of Campaigns...</button>
+    <br />
+    {campaigns.map((campaign, index) => (
+      <div key={index}>
+        <p>Campaign ID: {campaign.pubkey.toString()}</p>
+        <p>Balance: {(campaign.amountDonated / web3.LAMPORTS_PER_SOL).toString()}</p>
+        <p>{campaign.name}</p>
+        <p>{campaign.description}</p>
+        <br />
+      </div>
+    ))}
+  </div>
+)}
+
     </div>
   );
 };
