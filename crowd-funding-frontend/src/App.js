@@ -1,8 +1,8 @@
 import './App.css';
 import idl from "./idl.json";
-import { 
-  Connection, 
-  PublicKey, 
+import {
+  Connection,
+  PublicKey,
   clusterApiUrl
 } from "@solana/web3.js";
 import {
@@ -13,12 +13,14 @@ import {
 } from "@project-serum/anchor";
 import { useEffect, useState } from "react";
 import { Buffer } from "buffer";
+import { BN } from "bn.js";
+
 
 window.Buffer = Buffer;
 const { SystemProgram } = web3;
 
 const programID = idl?.address
-  ? new PublicKey(idl.address) 
+  ? new PublicKey(idl.address)
   : (() => { throw new Error("Program ID is missing or invalid in idl.json") })();
 
 const network = clusterApiUrl("devnet");
@@ -100,19 +102,19 @@ const App = () => {
   const createCampaign = async () => {
     try {
       const provider = getProvider();
-    // Ensure Program Initialization is Correct
-    if (!idl?.address) {
-      throw new Error("Program ID is missing in idl.json");
-    }
+      // Ensure Program Initialization is Correct
+      if (!idl?.address) {
+        throw new Error("Program ID is missing in idl.json");
+      }
 
-    const program = new Program(idl, idl.address, provider); // Use idl.address directly
+      const program = new Program(idl, idl.address, provider); // Use idl.address directly
 
-    if (!provider.wallet.publicKey) {
-      throw new Error("Wallet not connected or publicKey is undefined.");
-    }
+      if (!provider.wallet.publicKey) {
+        throw new Error("Wallet not connected or publicKey is undefined.");
+      }
 
-    // Validate Before PDA Call
-    console.log("Finding PDA...");
+      // Validate Before PDA Call
+      console.log("Finding PDA...");
 
       const [campaign] = await PublicKey.findProgramAddress(
         [
@@ -136,10 +138,55 @@ const App = () => {
     }
   };
 
+  const donate = async () => {
+    try {
+      const provider = getProvider();
+
+      // Ensure Program Initialization is Correct
+      if (!idl?.address) {
+        throw new Error("Program ID is missing in idl.json");
+      }
+
+      const program = new Program(idl, idl.address, provider); // Use idl.address directly
+
+      if (!provider.wallet.publicKey) {
+        throw new Error("Wallet not connected or publicKey is undefined.");
+      }
+
+      // Find the Campaign PDA
+      console.log("Finding Campaign PDA...");
+
+      const [campaignPDA] = await PublicKey.findProgramAddress(
+        [
+          utils.bytes.utf8.encode("CAMPAIGN_DEMO"),
+          provider.wallet.publicKey.toBuffer(),
+        ],
+        program.programId
+      );
+
+      console.log("Campaign PDA Address:", campaignPDA.toString());
+
+      // Donate to the campaign
+      await program.rpc.donate(new BN(0.2 * web3.LAMPORTS_PER_SOL), {
+        accounts: {
+          campaign: campaignPDA, // Correctly passing the PDA
+          user: provider.wallet.publicKey,
+          systemProgram: SystemProgram.programId,
+        },
+      });
+
+      console.log("Successfully donated to campaign at address:", campaignPDA.toString());
+      getCampaigns();
+    } catch (error) {
+      console.error("Error donating: ", error);
+    }
+  };
+
+
   useEffect(() => {
-    const onLoad =  async() => {
+    const onLoad = async () => {
       await checkIfWalletIsConnected();
-    }; 
+    };
     window.addEventListener("load", onLoad);
     return () => window.removeEventListener("load", onLoad);
   }, []);
@@ -148,21 +195,24 @@ const App = () => {
     <div className="App">
       {!walletAddress && <button onClick={connectWallet}>Connect to Wallet</button>}
       {walletAddress && (
-  <div>
-    <button onClick={createCampaign}>Create a Campaign</button>
-    <button onClick={getCampaigns}>Get a list of Campaigns...</button>
-    <br />
-    {campaigns.map((campaign, index) => (
-      <div key={index}>
-        <p>Campaign ID: {campaign.pubkey.toString()}</p>
-        <p>Balance: {(campaign.amountDonated / web3.LAMPORTS_PER_SOL).toString()}</p>
-        <p>{campaign.name}</p>
-        <p>{campaign.description}</p>
-        <br />
-      </div>
-    ))}
-  </div>
-)}
+        <div>
+          <button onClick={createCampaign}>Create a Campaign</button>
+          <button onClick={getCampaigns}>Get a list of Campaigns...</button>
+          <br />
+          {campaigns.map((campaign, index) => (
+            <div key={index}>
+              <p>Campaign ID: {campaign.pubkey.toString()}</p>
+              <p>Balance: {(campaign.amountDonated / web3.LAMPORTS_PER_SOL).toString()}</p>
+              <p>{campaign.name}</p>
+              <p>{campaign.description}</p>
+              <br />
+              <button onClick={() => donate(campaign.pubkey)}>
+                Click to Donate!
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
     </div>
   );
