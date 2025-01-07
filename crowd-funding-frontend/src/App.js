@@ -182,6 +182,47 @@ const App = () => {
     }
   };
 
+  const withdraw = async () => {
+    try{
+      const provider = getProvider();
+
+      // Ensure Program Initialization is Correct
+      if (!idl?.address) {
+        throw new Error("Program ID is missing in idl.json");
+      }
+
+      const program = new Program(idl, idl.address, provider); // Use idl.address directly
+
+      if (!provider.wallet.publicKey) {
+        throw new Error("Wallet not connected or publicKey is undefined.");
+      }
+
+      // Find the Campaign PDA
+      console.log("Finding Campaign PDA...");
+
+      const [campaignPDA] = await PublicKey.findProgramAddress(
+        [
+          utils.bytes.utf8.encode("CAMPAIGN_DEMO"),
+          provider.wallet.publicKey.toBuffer(),
+        ],
+        program.programId
+      );
+
+      console.log("Campaign PDA Address:", campaignPDA.toString());
+
+      // Donate to the campaign
+      await program.rpc.withdraw(new BN(0.2 * web3.LAMPORTS_PER_SOL), {
+        accounts: {
+          campaign: campaignPDA, // Correctly passing the PDA
+          user: provider.wallet.publicKey
+        },
+      });
+      console.log("Withdraw some money from:", campaignPDA.toString());
+    } catch (error) {
+      console.error("Error withdrawing: ", error);
+    }
+  };
+
 
   useEffect(() => {
     const onLoad = async () => {
@@ -208,6 +249,9 @@ const App = () => {
               <br />
               <button onClick={() => donate(campaign.pubkey)}>
                 Click to Donate!
+              </button>
+              <button onClick={() => withdraw(campaign.pubkey)}>
+                Click to Withdraw!
               </button>
             </div>
           ))}
