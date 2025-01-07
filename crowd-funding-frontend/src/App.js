@@ -47,15 +47,15 @@ const App = () => {
       const { solana } = window;
 
       if (solana?.isPhantom) {
-        console.log("Phantom wallet found!");
+        window.alert("Phantom wallet found!");
         const response = await solana.connect({ onlyIfTrusted: false });
-        console.log("Connected with publicKey", response.publicKey.toString());
+        window.alert("Connected with publicKey", response.publicKey.toString());
         setWalletAddress(response.publicKey.toString());
       } else {
         alert("Solana object not found! Get a Phantom wallet.");
       }
     } catch (error) {
-      console.error("Wallet connection error:", error);
+      window.alert("Wallet connection error:", error);
     }
   };
 
@@ -64,11 +64,11 @@ const App = () => {
       const { solana } = window;
       if (solana) {
         const response = await solana.connect();
-        console.log("Connected with publicKey", response.publicKey.toString());
+        window.alert(`Connected with publicKey ${response.publicKey.toString()}`);
         setWalletAddress(response.publicKey.toString());
       }
     } catch (error) {
-      console.error("Wallet connection error:", error);
+      window.alert(`Wallet connection error: ${error}`);
     }
   };
 
@@ -87,7 +87,7 @@ const App = () => {
     }
 
     // Validate Before PDA Call
-    console.log("Finding PDA...");
+    window.alert("Finding PDA...");
 
     Promise.all(
       (await connection.getProgramAccounts(programID)).map(
@@ -114,7 +114,7 @@ const App = () => {
       }
 
       // Validate Before PDA Call
-      console.log("Finding PDA...");
+      window.alert("Finding PDA...");
 
       const [campaign] = await PublicKey.findProgramAddress(
         [
@@ -132,9 +132,9 @@ const App = () => {
         },
       });
 
-      console.log("Campaign created with address:", campaign.toString());
+      window.alert(`Campaign created with address: ${campaign.toString()}`);
     } catch (error) {
-      console.error("Error creating campaign:", error);
+      window.alert(`Error creating campaign: ${error}`);
     }
   };
 
@@ -154,7 +154,7 @@ const App = () => {
       }
 
       // Find the Campaign PDA
-      console.log("Finding Campaign PDA...");
+      window.alert("Finding Campaign PDA...");
 
       const [campaignPDA] = await PublicKey.findProgramAddress(
         [
@@ -164,7 +164,7 @@ const App = () => {
         program.programId
       );
 
-      console.log("Campaign PDA Address:", campaignPDA.toString());
+      window.alert(`Campaign PDA Address: ${campaignPDA.toString()}`);
 
       // Donate to the campaign
       await program.rpc.donate(new BN(0.2 * web3.LAMPORTS_PER_SOL), {
@@ -175,10 +175,10 @@ const App = () => {
         },
       });
 
-      console.log("Successfully donated to campaign at address:", campaignPDA.toString());
+      window.alert(`Successfully donated to campaign at address: ${campaignPDA.toString()}`);
       getCampaigns();
     } catch (error) {
-      console.error("Error donating: ", error);
+      window.alert(`Error donating: ${error}`);
     }
   };
 
@@ -198,7 +198,7 @@ const App = () => {
       }
 
       // Find the Campaign PDA
-      console.log("Finding Campaign PDA...");
+      window.alert("Finding Campaign PDA...");
 
       const [campaignPDA] = await PublicKey.findProgramAddress(
         [
@@ -208,7 +208,7 @@ const App = () => {
         program.programId
       );
 
-      console.log("Campaign PDA Address:", campaignPDA.toString());
+      window.alert(`Campaign PDA Address: ${campaignPDA.toString()}`);
 
       // Donate to the campaign
       await program.rpc.withdraw(new BN(0.2 * web3.LAMPORTS_PER_SOL), {
@@ -217,9 +217,9 @@ const App = () => {
           user: provider.wallet.publicKey
         },
       });
-      console.log("Withdraw some money from:", campaignPDA.toString());
+      window.alert(`Withdraw some money from: ${campaignPDA.toString()}`);
     } catch (error) {
-      console.error("Error withdrawing: ", error);
+      window.alert(`Error withdrawing: ${error}`);
     }
   };
 
